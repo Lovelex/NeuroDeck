@@ -71,6 +71,38 @@ npm run dist
 
 ---
 
+## 📂 Formato de Importação (JSON)
+
+Para importar seus próprios decks, crie um arquivo `.json` seguindo a estrutura abaixo:
+
+```json
+{
+  "deck": {
+    "id": "uuid-v4-unico",
+    "name": "Nome do seu Deck",
+    "description": "Uma breve descrição",
+    "tags": ["estudo", "dev"],
+    "version": 1,
+    "createdAt": "2024-01-01T10:00:00Z",
+    "updatedAt": "2024-01-01T10:00:00Z"
+  },
+  "questions": [
+    {
+      "id": "q1",
+      "topic": "JavaScript",
+      "question": "Qual o resultado de 1 + '1'?",
+      "choices": ["11", "2", "NaN", "undefined"],
+      "answerIndex": 0,
+      "explanation": "No JS, o operador + realiza concatenação se um dos operandos for string."
+    }
+  ]
+}
+```
+
+> **Nota**: O campo `choices` deve ter exatamente **4 opções** e o `answerIndex` deve ser de **0 a 3**.
+
+---
+
 ## 🤖 AI-First Development
 
 Este projeto é um experimento de aprendizado e engenharia de software **100% desenvolvido por Inteligência Artificial**.
