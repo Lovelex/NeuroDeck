@@ -1,0 +1,43 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Production
+dist
+dist-electron
+dist_electron
+out
+release
+*.exe
+*.dmg
+*.AppImage
+
+# Vite
+.vite
+
+# Store / Local Data (IMPORTANT: Users shouldn't commit their progress/decks if private)
+userData
+*.json.tmp
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# IDEs
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
