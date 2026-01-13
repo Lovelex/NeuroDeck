@@ -1,4 +1,4 @@
-# NeuroDeck — Roadmap
+# 🧠 NeuroDeck — Roadmap
 
 Este documento descreve a **evolução planejada** do NeuroDeck.
 
@@ -72,4 +72,69 @@ não deve ser implementada — mesmo que pareça útil ou comum em outros apps.
 
 ### Ideia central
 Introduzir **perguntas abertas**, onde o usuário escreve a resposta em texto livre  
-e um modelo de linguagem ava
+e um modelo de linguagem avalia a resposta.
+
+### Possível funcionamento
+- Tipos de pergunta:
+  - múltipla escolha
+  - resposta aberta
+- A IA:
+  - avalia se a resposta está correta
+  - explica o motivo
+  - pode indicar resposta parcialmente correta
+
+### Importante
+- Feature **experimental**
+- Claramente rotulada como tal
+- Totalmente opcional
+- Pode usar LLM externa inicialmente
+- LLM local (ex: DeepSeek) é uma possibilidade futura, não garantia
+
+> Esta fase muda o paradigma do app e será tratada com cuidado extremo.
+
+---
+
+## Fase 3 — Diferenciais Avançados (Exploração)
+
+**Objetivo:** Consolidar o NeuroDeck como uma ferramenta única para aprendizado ativo técnico.
+
+Possibilidades (não garantidas):
+- Integração opcional com LLM local
+- Perfis de interrupção (ex: trabalho profundo, estudo leve)
+- Workflow mais forte para `needsReview`
+- CLI companion para usuários técnicos
+- Refinamentos avançados do algoritmo de priorização
+
+Nada aqui entra sem:
+- respeitar o manifesto
+- provar que fortalece a pergunta
+- manter o app simples
+
+---
+
+## Não Objetivos (Explícito)
+
+Estas coisas **não fazem parte do plano atual**:
+
+- ❌ Gamificação (pontos, streaks, rankings)
+- ❌ Dashboards e gráficos
+- ❌ Contas, login ou cloud sync
+- ❌ Mobile app
+- ❌ Social / compartilhamento
+- ❌ Análise de performance do usuário
+
+---
+
+## Nota Final
+
+O NeuroDeck não busca crescer rápido.  
+Busca crescer **certo**.
+
+Cada nova feature precisa responder à pergunta:
+
+> **Isso torna o momento da pergunta mais forte ou mais fraco?**
+
+Se enfraquecer, não entra — mesmo que seja tentador.
+
+---
+
