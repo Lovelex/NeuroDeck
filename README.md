@@ -36,8 +36,8 @@ NeuroDeck é uma ferramenta de estudo baseada em evidências que utiliza o conce
 
 1.  Clone o repositório:
     ```bash
-    git clone https://github.com/seu-usuario/neurodeck.git
-    cd neurodeck
+    git clone https://github.com/seu-usuario/NeuroDeck.git
+    cd NeuroDeck
     ```
 2.  Instale as dependências:
     ```bash
