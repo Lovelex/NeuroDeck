@@ -34,9 +34,15 @@ export interface SchedulerState {
   todayDate: string;
 }
 
+export interface UserPreferences {
+  itemsPerPageDecks: number;
+  itemsPerPageQuestions: number;
+}
+
 export interface UserProgress {
   schemaVersion: number;
   decks: Record<string, { isActive: boolean }>;
   questions: Record<string, any>;
   scheduler: SchedulerState;
+  preferences: UserPreferences;
 }

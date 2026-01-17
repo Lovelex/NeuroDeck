@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import EditIcon from '@mui/icons-material/Edit';
 import { DeckMetadata } from '../types';
 
 interface DeckCardProps {
@@ -18,7 +19,8 @@ interface DeckCardProps {
   questionCount: number;
   isActive: boolean;
   onToggle: (isActive: boolean) => void;
-  onEdit: () => void;
+  onEditQuestions: () => void;
+  onEditMetadata: () => void;
   onDelete: () => void;
 }
 
@@ -27,7 +29,8 @@ export function DeckCard({
   questionCount,
   isActive,
   onToggle,
-  onEdit,
+  onEditQuestions,
+  onEditMetadata,
   onDelete,
 }: DeckCardProps) {
   return (
@@ -98,10 +101,19 @@ export function DeckCard({
             {questionCount} questões
           </Typography>
           <Stack direction="row" spacing={0.5}>
+            <Tooltip title="Editar Nome/Tags">
+              <IconButton
+                size="small"
+                onClick={onEditMetadata}
+                sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
             <Tooltip title="Gerenciar Questões">
               <IconButton
                 size="small"
-                onClick={onEdit}
+                onClick={onEditQuestions}
                 sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
               >
                 <QuestionAnswerIcon fontSize="small" />

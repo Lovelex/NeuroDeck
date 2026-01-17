@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld('electron', {
     update: (deck: any) => ipcRenderer.invoke('deck:update', deck),
     delete: (deckId: string) => ipcRenderer.invoke('deck:delete', deckId),
     import: () => ipcRenderer.invoke('deck:import'),
+    importText: (text: string) => ipcRenderer.invoke('deck:import-text', text),
+    exportAll: () => ipcRenderer.invoke('deck:export-all'),
     toggleActive: (deckId: string, isActive: boolean) =>
       ipcRenderer.invoke('deck:toggleActive', { deckId, isActive }),
   },

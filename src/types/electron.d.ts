@@ -4,7 +4,9 @@ export interface ElectronAPI {
     create: (name: string, description: string) => Promise<any>;
     update: (deck: any) => Promise<any>;
     delete: (deckId: string) => Promise<boolean>;
-    import: () => Promise<boolean>;
+    import: () => Promise<{ success: boolean; canceled?: boolean; error?: string; count?: number }>;
+    importText: (text: string) => Promise<{ success: boolean; error?: string; count?: number }>;
+    exportAll: () => Promise<{ success: boolean; canceled?: boolean; error?: string }>;
     toggleActive: (deckId: string, isActive: boolean) => Promise<boolean>;
   };
   settings: {

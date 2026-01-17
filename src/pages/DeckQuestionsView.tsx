@@ -17,12 +17,13 @@ import {
   Breadcrumbs,
   Link,
   Divider,
+  Pagination,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { DeckFile, Question } from '../types';
+import { DeckFile, Question, UserProgress } from '../types';
 
 interface DeckQuestionsViewProps {
   deckId: string;
@@ -31,14 +32,23 @@ interface DeckQuestionsViewProps {
 
 export function DeckQuestionsView({ deckId, onBack }: DeckQuestionsViewProps) {
   const [deckFile, setDeckFile] = useState<DeckFile | null>(null);
+  const [progress, setProgress] = useState<UserProgress | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const itemsPerPage = progress?.preferences.itemsPerPageQuestions || 20;
+
   const loadDeck = async () => {
     try {
       setLoading(true);
-      const decks = await window.electron.deck.list();
+      const [decks, fetchedProgress] = await Promise.all([
+        window.electron.deck.list(),
+        window.electron.settings.get(),
+      ]);
+      setProgress(fetchedProgress);
       const found = decks.find((d) => d.deck.id === deckId);
       if (found) {
         setDeckFile(JSON.parse(JSON.stringify(found)));
@@ -123,6 +133,9 @@ export function DeckQuestionsView({ deckId, onBack }: DeckQuestionsViewProps) {
     );
   if (!deckFile) return null;
 
+  const paginatedQuestions = deckFile.questions.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  const totalPages = Math.ceil(deckFile.questions.length / itemsPerPage);
+
   return (
     <Box sx={{ maxWidth: 1000, margin: '0 auto', pb: 8, pt: 4 }}>
       <Box
@@ -188,160 +201,175 @@ export function DeckQuestionsView({ deckId, onBack }: DeckQuestionsViewProps) {
       </Box>
 
       <Stack spacing={4}>
-        {deckFile.questions.map((q, idx) => (
-          <Card
-            key={q.id}
-            variant="outlined"
-            sx={{
-              p: 0,
-              bgcolor: 'background.paper',
-              backgroundImage: 'none',
-              borderRadius: '16px',
-              overflow: 'hidden',
-              border: '1px solid',
-              borderColor: 'divider',
-              '&:hover': { borderColor: 'primary.main' },
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-            }}
-          >
-            <Box
+        {paginatedQuestions.map((q, localIdx) => {
+          const globalIdx = (page - 1) * itemsPerPage + localIdx;
+          return (
+            <Card
+              key={q.id}
+              variant="outlined"
               sx={{
-                p: 2,
-                px: 3,
-                bgcolor: 'action.hover',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                borderBottom: '1px solid',
+                p: 0,
+                bgcolor: 'background.paper',
+                backgroundImage: 'none',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                border: '1px solid',
                 borderColor: 'divider',
+                '&:hover': { borderColor: 'primary.main' },
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Box
-                  sx={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: '6px',
-                    bgcolor: 'primary.main',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography variant="caption" sx={{ color: 'white', fontWeight: 800 }}>
-                    {deckFile.questions.length - idx}
-                  </Typography>
-                </Box>
-                <Typography variant="subtitle2" fontWeight="700" letterSpacing="0.5px">
-                  QUESTÃO
-                </Typography>
-              </Stack>
-              <IconButton
-                size="small"
-                color="error"
-                onClick={() => handleRemove(idx)}
-                sx={{ '&:hover': { bgcolor: 'error.light', color: 'white' } }}
+              <Box
+                sx={{
+                  p: 2,
+                  px: 3,
+                  bgcolor: 'action.hover',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  borderBottom: '1px solid',
+                  borderColor: 'divider',
+                }}
               >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Box>
-
-            <Box sx={{ p: 4 }}>
-              <Grid container spacing={4}>
-                <Grid item xs={12} md={4}>
-                  <TextField
-                    label="Tópico Técnico"
-                    fullWidth
-                    variant="filled"
-                    placeholder="Ex: Teorema CAP, AWS S3, Algoritmos..."
-                    value={q.topic}
-                    onChange={(e) => handleUpdate(idx, 'topic', e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12} md={8}>
-                  <TextField
-                    label="Enunciado (Markdown não suportado no MVP)"
-                    fullWidth
-                    multiline
-                    rows={2}
-                    variant="filled"
-                    value={q.question}
-                    onChange={(e) => handleUpdate(idx, 'question', e.target.value)}
-                  />
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Divider sx={{ mb: 1 }}>
-                    <Typography variant="caption" color="text.secondary" fontWeight="700">
-                      ALTERNATIVAS
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <Box
+                    sx={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: '6px',
+                      bgcolor: 'primary.main',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography variant="caption" sx={{ color: 'white', fontWeight: 800 }}>
+                      {deckFile.questions.length - globalIdx}
                     </Typography>
-                  </Divider>
-                </Grid>
+                  </Box>
+                  <Typography variant="subtitle2" fontWeight="700" letterSpacing="0.5px">
+                    QUESTÃO
+                  </Typography>
+                </Stack>
+                <IconButton
+                  size="small"
+                  color="error"
+                  onClick={() => handleRemove(globalIdx)}
+                  sx={{ '&:hover': { bgcolor: 'error.light', color: 'white' } }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Box>
 
-                {q.choices.map((choice, cIdx) => (
-                  <Grid item xs={12} sm={6} key={cIdx}>
-                    <Box sx={{ position: 'relative' }}>
-                      <TextField
-                        label={`Opção ${String.fromCharCode(65 + cIdx)}`}
-                        fullWidth
-                        variant="standard"
-                        value={choice}
-                        sx={{
-                          '& .MuiInput-root': { pr: 4 },
-                          bgcolor:
-                            q.answerIndex === cIdx ? 'rgba(16, 185, 129, 0.05)' : 'transparent',
-                          p: 1,
-                          borderRadius: '4px',
-                        }}
-                        onChange={(e) => handleUpdateChoice(idx, cIdx, e.target.value)}
-                      />
-                      {q.answerIndex === cIdx && (
-                        <CheckCircleOutlineIcon
-                          sx={{
-                            position: 'absolute',
-                            right: 8,
-                            top: 16,
-                            color: '#10B981',
-                            fontSize: '1.2rem',
-                          }}
-                        />
-                      )}
-                    </Box>
+              <Box sx={{ p: 4 }}>
+                <Grid container spacing={4}>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label="Tópico Técnico"
+                      fullWidth
+                      variant="filled"
+                      placeholder="Ex: Teorema CAP, AWS S3, Algoritmos..."
+                      value={q.topic}
+                      onChange={(e) => handleUpdate(globalIdx, 'topic', e.target.value)}
+                    />
                   </Grid>
-                ))}
+                  <Grid item xs={12} md={8}>
+                    <TextField
+                      label="Enunciado"
+                      fullWidth
+                      multiline
+                      rows={2}
+                      variant="filled"
+                      value={q.question}
+                      onChange={(e) => handleUpdate(globalIdx, 'question', e.target.value)}
+                    />
+                  </Grid>
 
-                <Grid item xs={12} md={6}>
-                  <FormControl fullWidth variant="filled" size="small">
-                    <InputLabel>Resposta Correta</InputLabel>
-                    <Select
-                      value={q.answerIndex}
-                      sx={{ borderRadius: '8px' }}
-                      onChange={(e) => handleUpdate(idx, 'answerIndex', e.target.value as number)}
-                    >
-                      <MenuItem value={0}>Alternativa A</MenuItem>
-                      <MenuItem value={1}>Alternativa B</MenuItem>
-                      <MenuItem value={2}>Alternativa C</MenuItem>
-                      <MenuItem value={3}>Alternativa D</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
+                  <Grid item xs={12}>
+                    <Divider sx={{ mb: 1 }}>
+                      <Typography variant="caption" color="text.secondary" fontWeight="700">
+                        ALTERNATIVAS
+                      </Typography>
+                    </Divider>
+                  </Grid>
 
-                <Grid item xs={12}>
-                  <TextField
-                    label="Explicação Técnica (Aparece após a resposta)"
-                    fullWidth
-                    variant="filled"
-                    multiline
-                    rows={2}
-                    value={q.explanation}
-                    onChange={(e) => handleUpdate(idx, 'explanation', e.target.value)}
-                  />
+                  {q.choices.map((choice, cIdx) => (
+                    <Grid item xs={12} sm={6} key={cIdx}>
+                      <Box sx={{ position: 'relative' }}>
+                        <TextField
+                          label={`Opção ${String.fromCharCode(65 + cIdx)}`}
+                          fullWidth
+                          variant="standard"
+                          value={choice}
+                          sx={{
+                            '& .MuiInput-root': { pr: 4 },
+                            bgcolor:
+                              q.answerIndex === cIdx ? 'rgba(16, 185, 129, 0.05)' : 'transparent',
+                            p: 1,
+                            borderRadius: '4px',
+                          }}
+                          onChange={(e) => handleUpdateChoice(globalIdx, cIdx, e.target.value)}
+                        />
+                        {q.answerIndex === cIdx && (
+                          <CheckCircleOutlineIcon
+                            sx={{
+                              position: 'absolute',
+                              right: 8,
+                              top: 16,
+                              color: '#10B981',
+                              fontSize: '1.2rem',
+                            }}
+                          />
+                        )}
+                      </Box>
+                    </Grid>
+                  ))}
+
+                  <Grid item xs={12} md={6}>
+                    <FormControl fullWidth variant="filled" size="small">
+                      <InputLabel>Resposta Correta</InputLabel>
+                      <Select
+                        value={q.answerIndex}
+                        sx={{ borderRadius: '8px' }}
+                        onChange={(e) => handleUpdate(globalIdx, 'answerIndex', e.target.value as number)}
+                      >
+                        <MenuItem value={0}>Alternativa A</MenuItem>
+                        <MenuItem value={1}>Alternativa B</MenuItem>
+                        <MenuItem value={2}>Alternativa C</MenuItem>
+                        <MenuItem value={3}>Alternativa D</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Explicação Técnica"
+                      fullWidth
+                      variant="filled"
+                      multiline
+                      rows={2}
+                      value={q.explanation}
+                      onChange={(e) => handleUpdate(globalIdx, 'explanation', e.target.value)}
+                    />
+                  </Grid>
                 </Grid>
-              </Grid>
-            </Box>
-          </Card>
-        ))}
+              </Box>
+            </Card>
+          );
+        })}
       </Stack>
+
+      {totalPages > 1 && (
+        <Box sx={{ mt: 6, display: 'flex', justifyContent: 'center' }}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={(_, v) => setPage(v)}
+            color="primary"
+            shape="rounded"
+          />
+        </Box>
+      )}
 
       {deckFile.questions.length === 0 && (
         <Box

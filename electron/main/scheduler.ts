@@ -109,14 +109,17 @@ async function selectQuestion(
 
   for (const deckFile of decks) {
     const deckId = deckFile.deck.id;
-    // Must be active
-    if (!progress.decks[deckId]?.isActive) continue;
+    // Must have a valid ID and be active
+    if (!deckId || !progress.decks[deckId]?.isActive) continue;
+
+    const currentDeckId: string = deckId; // Explicit narrowing for TS
 
     for (const q of deckFile.questions) {
-      const qState = progress.questions[`${deckId}::${q.id}`];
+      const qId = q.id;
+      if (!qId) continue;
 
-      // If never seen, it's eligible immediately (nextEligibleAt is null or past)
-      // If seen, check nextEligibleAt
+      const qState = progress.questions[`${currentDeckId}::${qId}`];
+
       let isEligible = true;
       let correct = 0;
       let wrong = 0;
@@ -130,12 +133,10 @@ async function selectQuestion(
       }
 
       if (isEligible) {
-        // Algorithm: Base 1 + 2*Wrong + 1*Correct (min 0)
-        // Wait, "1 * correct (minimum 0)" might mean the term is correct*1? yes.
         const weight = 1 + 2 * wrong + 1 * correct;
 
         eligibleCandidates.push({
-          deckId,
+          deckId: currentDeckId,
           question: q,
           weight,
         });

@@ -73,22 +73,17 @@ npm run dist
 
 ## 📂 Formato de Importação (JSON)
 
-Para importar seus próprios decks, crie um arquivo `.json` seguindo a estrutura abaixo:
+Para importar seus próprios decks, crie um arquivo `.json` seguindo a estrutura abaixo. O NeuroDeck é inteligente: **campos como `id` e datas são opcionais** e serão gerados automaticamente se você não os fornecer.
 
 ```json
 {
   "deck": {
-    "id": "uuid-v4-unico",
     "name": "Nome do seu Deck",
     "description": "Uma breve descrição",
-    "tags": ["estudo", "dev"],
-    "version": 1,
-    "createdAt": "2024-01-01T10:00:00Z",
-    "updatedAt": "2024-01-01T10:00:00Z"
+    "tags": ["estudo", "dev"]
   },
   "questions": [
     {
-      "id": "q1",
       "topic": "JavaScript",
       "question": "Qual o resultado de 1 + '1'?",
       "choices": ["11", "2", "NaN", "undefined"],
@@ -99,6 +94,18 @@ Para importar seus próprios decks, crie um arquivo `.json` seguindo a estrutura
 }
 ```
 
+### 📦 Importação de Múltiplos Decks (Array)
+Você também pode importar uma lista de decks de uma só vez. Este é o formato gerado pelo botão **Exportar** do app:
+
+```json
+[
+  { "deck": { "name": "Deck 1", ... }, "questions": [...] },
+  { "deck": { "name": "Deck 2", ... }, "questions": [...] }
+]
+```
+
+> **Dica**: Você pode copiar o JSON acima, colar no **Terminal de Importação** do app e ele funcionará perfeitamente!
+> 
 > **Nota**: O campo `choices` deve ter exatamente **4 opções** e o `answerIndex` deve ser de **0 a 3**.
 
 ---
