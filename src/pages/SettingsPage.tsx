@@ -22,6 +22,8 @@ export function SettingsPage() {
   // Local state for inputs
   const [interval, setInterval] = useState<number>(15);
   const [limit, setLimit] = useState<number>(20);
+  const [itemsDecks, setItemsDecks] = useState<number>(10);
+  const [itemsQuestions, setItemsQuestions] = useState<number>(20);
 
   const isElectron = !!window.electron;
 
@@ -36,6 +38,8 @@ export function SettingsPage() {
         setProgress(fetchedProgress);
         setInterval(fetchedProgress.scheduler.minIntervalMinutes);
         setLimit(fetchedProgress.scheduler.questionsPerDay);
+        setItemsDecks(fetchedProgress.preferences.itemsPerPageDecks);
+        setItemsQuestions(fetchedProgress.preferences.itemsPerPageQuestions);
       }
     } catch (e) {
       console.error(e);
@@ -50,13 +54,18 @@ export function SettingsPage() {
   const handleSave = async () => {
     if (!progress || !isElectron) return;
 
-    const newScheduler = {
-      ...progress.scheduler,
+    // Update scheduler
+    await window.electron.settings.update({
       minIntervalMinutes: interval,
       questionsPerDay: limit,
-    };
+    });
 
-    await window.electron.settings.update(newScheduler);
+    // Update preferences
+    await window.electron.settings.update({
+      itemsPerPageDecks: itemsDecks,
+      itemsPerPageQuestions: itemsQuestions,
+    });
+
     loadData();
   };
 
@@ -110,7 +119,36 @@ export function SettingsPage() {
                   value={limit}
                   onChange={(e) => setLimit(parseInt(e.target.value) || 0)}
                 />
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Divider sx={{ my: 1 }} />
+
+                <Typography variant="subtitle2" fontWeight="700">
+                  Preferências de Visualização
+                </Typography>
+
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Decks por Página"
+                      type="number"
+                      fullWidth
+                      variant="filled"
+                      value={itemsDecks}
+                      onChange={(e) => setItemsDecks(parseInt(e.target.value) || 1)}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Questões por Página"
+                      type="number"
+                      fullWidth
+                      variant="filled"
+                      value={itemsQuestions}
+                      onChange={(e) => setItemsQuestions(parseInt(e.target.value) || 1)}
+                    />
+                  </Grid>
+                </Grid>
+
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                   <Button
                     variant="contained"
                     startIcon={<SaveIcon />}

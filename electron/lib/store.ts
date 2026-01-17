@@ -15,10 +15,14 @@ const INITIAL_PROGRESS: UserProgress = {
     todayCount: 0,
     todayDate: new Date().toISOString().split('T')[0],
   },
+  preferences: {
+    itemsPerPageDecks: 10,
+    itemsPerPageQuestions: 20
+  },
 };
 
 export class DataStore {
-  constructor() {}
+  constructor() { }
 
   async init() {
     await ensureDirs();
@@ -66,7 +70,7 @@ export class DataStore {
     const filePath = path.join(DECKS_DIR, `${deckId}.json`);
     // Simple unlink, catch error if missing
     const fs = require('fs/promises');
-    await fs.unlink(filePath).catch(() => {});
+    await fs.unlink(filePath).catch(() => { });
   }
 }
 

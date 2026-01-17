@@ -1,12 +1,12 @@
 {
   "name": "neurodeck",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Active learning through interruptions",
   "main": "dist-electron/main/index.js",
   "scripts": {
     "dev": "npm run build:electron && concurrently -k \"vite\" \"npm run dev:electron\"",
-    "dev:electron": "wait-on http://127.0.0.1:5173 && cross-env NODE_ENV=development electron .",
+    "dev:electron": "wait-on http://127.0.0.1:5174 && cross-env NODE_ENV=development electron .",
     "build": "tsc && vite build && npm run build:electron",
     "build:electron": "tsc -p electron/tsconfig.json",
     "pack": "electron-builder --dir",
@@ -20,6 +20,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.18",
     "@mui/material": "^5.14.18",
+    "json-parse-even-better-errors": "^5.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "zod": "^3.22.4"

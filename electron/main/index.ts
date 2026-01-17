@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, shell, Tray, Menu, nativeImage } from 'electron';
 import path from 'path';
 import os from 'os';
 
@@ -14,6 +14,7 @@ if (!app.requestSingleInstanceLock()) {
 }
 
 let win: BrowserWindow | null = null;
+let tray: Tray | null = null;
 
 const preload = path.join(__dirname, '../preload/index.js');
 const url = process.env.VITE_DEV_SERVER_URL as string;
@@ -38,9 +39,9 @@ async function createWindow() {
   });
 
   if (process.env.NODE_ENV === 'development') {
-    console.log('[Main] Running in development mode, loading http://127.0.0.1:5173');
+    console.log('[Main] Running in development mode, loading http://127.0.0.1:5174');
     // Load the url of the dev server if in development mode
-    await win.loadURL('http://127.0.0.1:5173');
+    await win.loadURL('http://127.0.0.1:5174');
     win.webContents.openDevTools();
   } else {
     await win.loadFile(indexHtml);
@@ -62,6 +63,48 @@ async function createWindow() {
   win.on('closed', () => {
     win = null;
   });
+
+  win.on('minimize', (event: any) => {
+    event.preventDefault();
+    win?.hide();
+  });
+}
+
+function createTray() {
+  const iconPath = process.env.NODE_ENV === 'development'
+    ? path.join(__dirname, '../../public/icon.png')
+    : path.join(process.resourcesPath, 'icon.png');
+
+  const icon = nativeImage.createFromPath(iconPath);
+  tray = new Tray(icon);
+
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Abrir NeuroDeck',
+      click: () => {
+        win?.show();
+        win?.focus();
+      },
+    },
+    { type: 'separator' },
+    {
+      label: 'Sair Completamente',
+      click: () => {
+        app.quit();
+      },
+    },
+  ]);
+
+  tray.setToolTip('NeuroDeck');
+  tray.setContextMenu(contextMenu);
+
+  tray.on('click', () => {
+    if (win?.isVisible()) {
+      win.focus();
+    } else {
+      win?.show();
+    }
+  });
 }
 
 import { setupIpc } from './ipc';
@@ -77,6 +120,9 @@ app.whenReady().then(async () => {
 
   console.log('[Main] Creating window...');
   await createWindow();
+
+  console.log('[Main] Creating tray icon...');
+  createTray();
 
   if (win) {
     console.log('[Main] Window created, initializing scheduler...');

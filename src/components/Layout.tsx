@@ -63,30 +63,40 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
       <Box
         component="nav"
         sx={{
-          width: SIDEBAR_WIDTH,
+          width: { xs: 72, md: SIDEBAR_WIDTH },
           flexShrink: 0,
           borderRight: '1px solid',
           borderColor: 'divider',
           bgcolor: 'background.paper',
           display: 'flex',
           flexDirection: 'column',
+          transition: 'width 0.2s ease-in-out',
+          overflowX: 'hidden'
         }}
       >
-        <Box sx={{ p: 3, mb: 2, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Box sx={{
+          p: { xs: 2, md: 3 },
+          mb: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: { xs: 'center', md: 'flex-start' },
+          gap: 1.5
+        }}>
           <Box
             sx={{
-              width: 32,
-              height: 32,
-              bgcolor: 'primary.main',
-              borderRadius: '8px',
+              width: 36,
+              height: 36,
+              flexShrink: 0,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Typography variant="h6" sx={{ color: 'white', fontWeight: 900, fontSize: '1rem' }}>
-              N
-            </Typography>
+            <Box
+              component="img"
+              src="/icon.png"
+              sx={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            />
           </Box>
           <Typography
             variant="h6"
@@ -94,6 +104,8 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
               fontWeight: 800,
               letterSpacing: '-0.5px',
               fontSize: '1.1rem',
+              display: { xs: 'none', md: 'block' },
+              whiteSpace: 'nowrap'
             }}
           >
             NeuroDeck
@@ -105,9 +117,14 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
             <ListItemButton
               selected={currentView === 'decks'}
               onClick={() => onNavigate('decks')}
-              sx={{ borderRadius: '8px', py: 1 }}
+              sx={{
+                borderRadius: '8px',
+                py: 1,
+                justifyContent: { xs: 'center', md: 'flex-start' },
+                px: { xs: 1, md: 2 }
+              }}
             >
-              <ListItemIcon sx={{ minWidth: 36 }}>
+              <ListItemIcon sx={{ minWidth: { xs: 0, md: 36 }, justifyContent: 'center' }}>
                 <DashboardIcon
                   fontSize="small"
                   color={currentView === 'decks' ? 'primary' : 'inherit'}
@@ -115,6 +132,7 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
               </ListItemIcon>
               <ListItemText
                 primary="Decks"
+                sx={{ display: { xs: 'none', md: 'block' } }}
                 primaryTypographyProps={{
                   fontSize: '0.875rem',
                   fontWeight: currentView === 'decks' ? 600 : 500,
@@ -126,9 +144,14 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
             <ListItemButton
               selected={currentView === 'history'}
               onClick={() => onNavigate('history')}
-              sx={{ borderRadius: '8px', py: 1 }}
+              sx={{
+                borderRadius: '8px',
+                py: 1,
+                justifyContent: { xs: 'center', md: 'flex-start' },
+                px: { xs: 1, md: 2 }
+              }}
             >
-              <ListItemIcon sx={{ minWidth: 36 }}>
+              <ListItemIcon sx={{ minWidth: { xs: 0, md: 36 }, justifyContent: 'center' }}>
                 <HistoryIcon
                   fontSize="small"
                   color={currentView === 'history' ? 'primary' : 'inherit'}
@@ -136,6 +159,7 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
               </ListItemIcon>
               <ListItemText
                 primary="Histórico"
+                sx={{ display: { xs: 'none', md: 'block' } }}
                 primaryTypographyProps={{
                   fontSize: '0.875rem',
                   fontWeight: currentView === 'history' ? 600 : 500,
@@ -147,9 +171,14 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
             <ListItemButton
               selected={currentView === 'settings'}
               onClick={() => onNavigate('settings')}
-              sx={{ borderRadius: '8px', py: 1 }}
+              sx={{
+                borderRadius: '8px',
+                py: 1,
+                justifyContent: { xs: 'center', md: 'flex-start' },
+                px: { xs: 1, md: 2 }
+              }}
             >
-              <ListItemIcon sx={{ minWidth: 36 }}>
+              <ListItemIcon sx={{ minWidth: { xs: 0, md: 36 }, justifyContent: 'center' }}>
                 <SettingsIcon
                   fontSize="small"
                   color={currentView === 'settings' ? 'primary' : 'inherit'}
@@ -157,6 +186,7 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
               </ListItemIcon>
               <ListItemText
                 primary="Configurações"
+                sx={{ display: { xs: 'none', md: 'block' } }}
                 primaryTypographyProps={{
                   fontSize: '0.875rem',
                   fontWeight: currentView === 'settings' ? 600 : 500,
@@ -166,27 +196,45 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
           </ListItem>
         </List>
 
-        <Divider sx={{ mx: 2, mb: 2 }} />
-        <Box sx={{ p: 2, mb: 1 }}>
+        <Divider sx={{ mx: { xs: 1, md: 2 }, mb: 2 }} />
+        <Box sx={{ p: { xs: 1, md: 2 }, mb: 1 }}>
           <Typography
             variant="caption"
             color="text.secondary"
-            sx={{ fontWeight: 600, ml: 1, mb: 1, display: 'block' }}
+            sx={{
+              fontWeight: 600,
+              mb: 1,
+              display: { xs: 'none', md: 'block' },
+              textAlign: 'center'
+            }}
           >
             ESTADO
           </Typography>
           <Box
             sx={{
-              p: 1.5,
-              borderRadius: '12px',
+              p: { xs: 0.5, md: 1.5 },
+              borderRadius: { xs: '8px', md: '12px' },
               bgcolor: isSystemOn ? 'rgba(59, 130, 246, 0.08)' : 'rgba(239, 68, 68, 0.08)',
               border: '1px solid',
               borderColor: isSystemOn ? 'rgba(59, 130, 246, 0.2)' : 'rgba(239, 68, 68, 0.2)',
               transition: 'all 0.2s',
+              display: 'flex',
+              justifyContent: 'center'
             }}
           >
-            <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
-              <Typography variant="body2" fontWeight="600" color={isSystemOn ? 'primary' : 'error'}>
+            <Stack
+              direction={{ xs: 'column', md: 'row' }}
+              spacing={1}
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ width: '100%' }}
+            >
+              <Typography
+                variant="caption"
+                fontWeight="600"
+                color={isSystemOn ? 'primary' : 'error'}
+                sx={{ display: { xs: 'none', md: 'block' } }}
+              >
                 {isSystemOn ? 'ATIVO' : 'PAUSADO'}
               </Typography>
               <Switch
@@ -201,7 +249,7 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
       </Box>
 
       {/* Main Wrapper */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minWidth: 0 }}>
         {/* Header */}
         <Box
           sx={{
@@ -211,7 +259,7 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
             bgcolor: 'background.paper',
             display: 'flex',
             alignItems: 'center',
-            px: 4,
+            px: { xs: 2, md: 4 },
             justifyContent: 'space-between',
           }}
         >
@@ -229,7 +277,11 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
                   bgcolor: isSystemOn ? '#10B981' : '#EF4444',
                 }}
               />
-              <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>
+              <Typography variant="caption" sx={{
+                fontWeight: 600,
+                color: 'text.secondary',
+                display: { xs: 'none', sm: 'block' }
+              }}>
                 STATUS DO AGENDADOR
               </Typography>
             </Stack>
@@ -245,7 +297,7 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
         </Box>
 
         {/* Content Area */}
-        <Box component="main" sx={{ flexGrow: 1, overflow: 'auto' }}>
+        <Box component="main" sx={{ flexGrow: 1, overflow: 'auto', p: { xs: 2.5, md: 4 } }}>
           {children}
         </Box>
       </Box>

@@ -38,7 +38,8 @@ export function QuestionCard({
         width: '100vw',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: { xs: 'center', md: 'flex-start' },
+        pl: { md: '10%' },
         bgcolor: 'background.default',
         position: 'fixed',
         top: 0,
@@ -47,7 +48,7 @@ export function QuestionCard({
       }}
     >
       <Fade in={true} timeout={300}>
-        <Card sx={{ maxWidth: 600, width: '90%', p: 2, boxShadow: 6 }}>
+        <Card sx={{ maxWidth: 700, width: '90%', p: 2, boxShadow: 6 }}>
           <CardContent>
             {/* Topic Tag */}
             <Typography variant="overline" color="primary" sx={{ letterSpacing: 1.5 }}>
@@ -55,7 +56,7 @@ export function QuestionCard({
             </Typography>
 
             {/* Question Text */}
-            <Typography variant="h5" sx={{ mt: 2, mb: 4, fontWeight: 500 }}>
+            <Typography variant="h5" sx={{ mt: 2, mb: 4, fontWeight: 500, lineHeight: 1.4 }}>
               {question.question}
             </Typography>
 
@@ -70,10 +71,18 @@ export function QuestionCard({
                       onClick={() => onAnswer(idx)}
                       sx={{
                         justifyContent: 'flex-start',
-                        py: 1.5,
+                        textAlign: 'left',
+                        py: 2,
+                        px: 3,
                         borderColor: 'divider',
                         color: 'text.primary',
-                        ':hover': { borderColor: 'primary.main' },
+                        borderRadius: '12px',
+                        textTransform: 'none',
+                        fontSize: '1rem',
+                        ':hover': {
+                          borderColor: 'primary.main',
+                          bgcolor: 'rgba(59, 130, 246, 0.05)'
+                        },
                       }}
                     >
                       <Box
@@ -84,14 +93,20 @@ export function QuestionCard({
                           fontSize: '0.75rem',
                           border: '1px solid',
                           borderColor: 'divider',
-                          borderRadius: 1,
-                          width: 24,
-                          textAlign: 'center',
+                          borderRadius: '6px',
+                          minWidth: 28,
+                          height: 28,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 700,
                         }}
                       >
                         {idx + 1}
                       </Box>
-                      {choice}
+                      <Box component="span" sx={{ flex: 1 }}>
+                        {choice}
+                      </Box>
                     </Button>
                   </Grid>
                 ))}
@@ -108,8 +123,8 @@ export function QuestionCard({
                   >
                     {question.explanation}
                   </Typography>
-                  <Button variant="contained" fullWidth onClick={onContinue}>
-                    Continue (Enter)
+                  <Button variant="contained" fullWidth onClick={onContinue} sx={{ py: 1.5, borderRadius: '12px' }}>
+                    Continuar (Enter)
                   </Button>
                 </Box>
               </Fade>
