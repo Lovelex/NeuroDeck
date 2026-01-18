@@ -10,20 +10,23 @@ interface QuestionViewProps {
 
 export function QuestionView({ question, deckId, onComplete }: QuestionViewProps) {
   const [showExplanation, setShowExplanation] = useState(false);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
   // Reset state if question changes
   useEffect(() => {
     setShowExplanation(false);
+    setIsCorrect(null);
   }, [question]);
 
   const handleAnswer = async (index: number) => {
     setShowExplanation(true);
 
     // Calculate if correct
-    const isCorrect = index === question.answerIndex;
+    const correct = index === question.answerIndex;
+    setIsCorrect(correct);
     try {
       if (window.electron && window.electron.question) {
-        await window.electron.question.answer(deckId, question.id, isCorrect);
+        await window.electron.question.answer(deckId, question.id, correct);
       } else {
         console.warn('Electron API not available');
       }
@@ -37,6 +40,7 @@ export function QuestionView({ question, deckId, onComplete }: QuestionViewProps
       question={question}
       onAnswer={handleAnswer}
       showExplanation={showExplanation}
+      isCorrect={isCorrect}
       onContinue={onComplete}
     />
   );

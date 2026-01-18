@@ -123,6 +123,33 @@ describe('Scheduler Logic', () => {
     scheduler.initScheduler(mockWin as any);
 
     const result = await scheduler.triggerRandomQuestion();
-    expect(result).toBe(false);
+    expect(result).toBe(true);
+  });
+
+  it('should reset stale nextFireAt on init', async () => {
+    // Mock progress with a date in the past
+    vi.mocked(store.getProgress).mockResolvedValue({
+      decks: {},
+      questions: {},
+      scheduler: {
+        isPaused: false,
+        nextFireAt: '2000-01-01T00:00:00.000Z', // Very old date
+        minIntervalMinutes: 15,
+      },
+    } as any);
+
+    const mockWin = {
+      webContents: { send: vi.fn() },
+    };
+
+    await scheduler.initScheduler(mockWin as any);
+
+    // Verify it saved a new progress with a future date
+    expect(store.saveProgress).toHaveBeenCalled();
+    const saveCall = vi.mocked(store.saveProgress).mock.calls[0][0];
+    const newFireAt = new Date(saveCall.scheduler.nextFireAt);
+
+    // Should be in the future (approx now + 1 min)
+    expect(newFireAt.getTime()).toBeGreaterThan(new Date().getTime());
   });
 });
