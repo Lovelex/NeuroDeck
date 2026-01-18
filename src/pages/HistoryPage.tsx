@@ -4,6 +4,8 @@ import { UserProgress } from '../types';
 
 export function HistoryPage() {
   const [progress, setProgress] = useState<UserProgress | null>(null);
+  const [deckLookup, setDeckLookup] = useState<Record<string, string>>({}); // qId -> question text
+  const [deckNameLookup, setDeckNameLookup] = useState<Record<string, string>>({}); // dId -> deck name
   const [error, setError] = useState<string | null>(null);
 
   const isElectron = !!window.electron;
@@ -14,6 +16,19 @@ export function HistoryPage() {
         .get()
         .then(setProgress)
         .catch(() => setError('Erro ao carregar histórico.'));
+
+      window.electron.deck.list().then((decks: any[]) => {
+        const qLookup: Record<string, string> = {};
+        const dLookup: Record<string, string> = {};
+        decks.forEach(d => {
+          dLookup[d.deck.id] = d.deck.name;
+          d.questions.forEach((q: any) => {
+            qLookup[q.id] = q.question;
+          });
+        });
+        setDeckLookup(qLookup);
+        setDeckNameLookup(dLookup);
+      });
     } else {
       setError('Electron API não detectada.');
     }
@@ -21,12 +36,12 @@ export function HistoryPage() {
 
   const historyItems = progress
     ? Object.entries(progress.questions)
-        .filter(([_, data]) => data.lastAnsweredAt)
-        .sort(
-          (a, b) =>
-            new Date(b[1].lastAnsweredAt).getTime() - new Date(a[1].lastAnsweredAt).getTime()
-        )
-        .slice(0, 50)
+      .filter(([_, data]) => data.lastAnsweredAt)
+      .sort(
+        (a, b) =>
+          new Date(b[1].lastAnsweredAt).getTime() - new Date(a[1].lastAnsweredAt).getTime()
+      )
+      .slice(0, 50)
     : [];
 
   if (error && !isElectron) {
@@ -63,7 +78,11 @@ export function HistoryPage() {
         ) : (
           <List sx={{ p: 0 }}>
             {historyItems.map(([key, data]) => {
-              const [deckId, qId] = key.split('::');
+              // Handle old format (qId only) and new format (deckId::qId)
+              const parts = key.split('::');
+              const qId = parts.length > 1 ? parts[1] : parts[0];
+              const deckId = parts.length > 1 ? parts[0] : 'Desconhecido';
+
               return (
                 <Card
                   variant="outlined"
@@ -73,12 +92,9 @@ export function HistoryPage() {
                   <ListItem sx={{ py: 2 }}>
                     <ListItemText
                       primary={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                           <Typography variant="subtitle1" fontWeight="600">
-                            {qId}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            em {deckId}
+                            {deckLookup[qId] || qId}
                           </Typography>
                         </Box>
                       }

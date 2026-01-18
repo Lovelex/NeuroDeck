@@ -172,7 +172,8 @@ export function setupIpc() {
     ) => {
       const progress = await store.getProgress();
 
-      const current = progress.questions[questionId] || {
+      const key = `${deckId}::${questionId}`;
+      const current = progress.questions[key] || {
         seen: 0,
         correct: 0,
         wrong: 0,
@@ -191,7 +192,7 @@ export function setupIpc() {
       nextDate.setMinutes(nextDate.getMinutes() + waitMinutes);
       current.nextEligibleAt = nextDate.toISOString();
 
-      progress.questions[questionId] = current;
+      progress.questions[key] = current;
 
       await store.saveProgress(progress);
       return true;

@@ -8,9 +8,26 @@ let mainWindow: BrowserWindow | null = null;
 // Constants
 const TICK_INTERVAL_MS = 60 * 1000; // 60 seconds
 
-export function initScheduler(win: BrowserWindow) {
+export async function initScheduler(win: BrowserWindow) {
   mainWindow = win;
   if (intervalId) clearInterval(intervalId);
+
+  // Initial check: if nextFireAt is stale (in the past), reset it to NOW+1 min so the UI updates
+  // instead of showing a weird old date.
+  try {
+    const progress = await store.getProgress();
+    if (progress.scheduler.nextFireAt && new Date(progress.scheduler.nextFireAt) < new Date()) {
+      console.log('[Scheduler] Found stale nextFireAt, resetting...');
+      // Reset to a short interval from now to "restart" the cycle
+      const nextFire = new Date();
+      nextFire.setMinutes(nextFire.getMinutes() + 1);
+      progress.scheduler.nextFireAt = nextFire.toISOString();
+      await store.saveProgress(progress);
+    }
+  } catch (err) {
+    console.error('[Scheduler] Failed to perform initial check:', err);
+  }
+
   intervalId = setInterval(tick, TICK_INTERVAL_MS);
 
   // Run immediately on start for dev convenience (can remove later)
@@ -27,7 +44,8 @@ export async function triggerRandomQuestion() {
   if (!mainWindow) return false;
   const progress = await store.getProgress();
 
-  if (!canFire(progress.scheduler)) return false;
+  // Force trigger should bypass scheduler constraints (pause, daily limit)
+  // if (!canFire(progress.scheduler)) return false;
 
   const selection = await selectQuestion(progress);
   if (selection) {
@@ -69,6 +87,14 @@ async function tick() {
     await triggerInterruption(selection.deckId, selection.question);
   } else {
     console.log('[Scheduler] No eligible questions found');
+
+    // Update nextFireAt so the UI doesn't show a stale date from the past
+    // ignoring the fact that we didn't find a question (maybe coincidentally)
+    const nextCheck = new Date();
+    // We can just bump it to the next tick or short interval
+    nextCheck.setMinutes(nextCheck.getMinutes() + 1);
+    progress.scheduler.nextFireAt = nextCheck.toISOString();
+    await store.saveProgress(progress);
   }
 }
 

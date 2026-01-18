@@ -1,4 +1,6 @@
 import { Box, Card, CardContent, Typography, Button, Grid, Fade } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { Question } from '../types';
 import { useEffect } from 'react';
 
@@ -6,6 +8,7 @@ interface QuestionCardProps {
   question: Question;
   onAnswer: (index: number) => void;
   showExplanation: boolean;
+  isCorrect?: boolean | null;
   onContinue: () => void;
 }
 
@@ -13,6 +16,7 @@ export function QuestionCard({
   question,
   onAnswer,
   showExplanation,
+  isCorrect,
   onContinue,
 }: QuestionCardProps) {
   // Keyboard access
@@ -38,8 +42,8 @@ export function QuestionCard({
         width: '100vw',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: { xs: 'center', md: 'flex-start' },
-        pl: { md: '10%' },
+        justifyContent: 'center',
+        pl: 0,
         bgcolor: 'background.default',
         position: 'fixed',
         top: 0,
@@ -117,6 +121,24 @@ export function QuestionCard({
             {showExplanation && (
               <Fade in={true}>
                 <Box>
+                  {isCorrect !== null && isCorrect !== undefined && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                      {isCorrect ? (
+                        <CheckCircleIcon sx={{ color: '#10B981', fontSize: 28 }} />
+                      ) : (
+                        <CancelIcon sx={{ color: '#EF4444', fontSize: 28 }} />
+                      )}
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          color: isCorrect ? '#10B981' : '#EF4444',
+                          fontWeight: 700,
+                        }}
+                      >
+                        {isCorrect ? 'Correto' : 'Incorreto'}
+                      </Typography>
+                    </Box>
+                  )}
                   <Typography
                     variant="body1"
                     sx={{ mb: 3, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}
